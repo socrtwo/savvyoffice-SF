@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6F45CD57-7152-4589-8727-605A837E880C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>SavvyWord_Recovery1.My.MyApplication</StartupObject>
+    <RootNamespace>SavvyWord_Recovery1</RootNamespace>
+    <AssemblyName>Savvy Repair for Microsoft Office</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>WindowsForms</MyType>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <PublishUrl>C:\Users\socrtwo\Desktop\Savvy Recovery for Microsoft Office\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>11</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>Savvy Repair for Microsoft Office.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>Savvy Repair for Microsoft Office.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Images\64X64_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>363FE78307079DB4817AE4095E48EAF6DA38C4F2</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>Savvy Repair for Microsoft Office.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>Savvy Repair for Microsoft Office.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Forms\FormAbout.Designer.vb">
+      <DependentUpon>FormAbout.vb</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Forms\FormAbout.vb">
+      <SubType>Form</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Forms\FormMain.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormMain.Designer.vb">
+      <DependentUpon>FormMain.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\FormAbout.resx">
+      <DependentUpon>FormAbout.vb</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMain.resx">
+      <DependentUpon>FormMain.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Data\Blank.docx" />
+    <None Include="My Project\app.manifest">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="256x256-ICO.ico" />
+    <Content Include="Binaries\7-zip.dll" />
+    <Content Include="Binaries\7z.dll" />
+    <Content Include="Binaries\7z.exe" />
+    <Content Include="Binaries\coffec.exe" />
+    <Content Include="Binaries\cyggcc_s-1.dll" />
+    <Content Include="Binaries\cygiconv-2.dll" />
+    <Content Include="Binaries\cygintl-8.dll" />
+    <Content Include="Binaries\cygwin1.dll" />
+    <Content Include="Binaries\doctotext.exe" />
+    <Content Include="Binaries\iconv.dll" />
+    <Content Include="Binaries\libgcc_s_sjlj-1.dll" />
+    <Content Include="Binaries\libglib-2.0-0.dll" />
+    <Content Include="Binaries\libgobject-2.0-0.dll" />
+    <Content Include="Binaries\libgsf-1-114.dll" />
+    <Content Include="Binaries\libiconv-2.dll" />
+    <Content Include="Binaries\libintl-8.dll" />
+    <Content Include="Binaries\libxml2-2.dll" />
+    <Content Include="Binaries\libxml2-2_.dll" />
+    <None Include="Images\WordFix_frame_0004.png" />
+    <None Include="Images\WordFix_frame_0003.png" />
+    <None Include="Images\WordFix_frame_0001.png" />
+    <Content Include="Images\64X64_icon.ico" />
+    <Content Include="Images\WordFix_frame_0002.png" />
+    <None Include="Images\zipperrepair4.png" />
+    <None Include="Images\wrench.png" />
+    <None Include="Images\WordpadiconWindows7.png" />
+    <None Include="Images\word_2007.jpg" />
+    <None Include="Images\Wizard_Hat_Icon.png" />
+    <None Include="Images\viewicon.png" />
+    <None Include="Images\screenshot2.png" />
+    <None Include="Images\saveIcon.png" />
+    <None Include="Images\Safe_128.jpg" />
+    <None Include="Images\s2service_logo_altered2.png" />
+    <None Include="Images\reregister.png" />
+    <None Include="Images\repairxml2.png" />
+    <None Include="Images\repairxml.png" />
+    <None Include="Images\repair.png" />
+    <None Include="Images\plus-data-transfer.png" />
+    <None Include="Images\OnlineRecovery.png" />
+    <None Include="Images\MicrosoftWord.png" />
+    <None Include="Images\Microsoft_Excel.png" />
+    <None Include="Images\MBrepair.png" />
+    <None Include="Data\styles.xml" />
+    <Content Include="Binaries\no-frills.exe" />
+    <Content Include="Binaries\UnzDll.dll" />
+    <Content Include="Binaries\ZipDll.dll" />
+    <None Include="Images\200px-Add-folder-to-archive.svg.png" />
+    <None Include="Images\1024x1024-PNG.png" />
+    <None Include="Images\Add_Blank_Files.png" />
+    <None Include="Images\Boite.png" />
+    <None Include="Images\BSicon.png" />
+    <None Include="Images\btn_donateCC_LG2.png" />
+    <None Include="Images\Calculator128.jpg" />
+    <None Include="Images\charticon.png" />
+    <None Include="Images\Cimaware_ExcelFix.png" />
+    <None Include="Images\Clipboard01.png" />
+    <None Include="Images\Crystal_Clear_app_Startup_Wizard2.png" />
+    <None Include="Images\Crystal_file_temporary.png" />
+    <None Include="Images\Data-transfer.png" />
+    <None Include="Images\Data-transfer.svg.png" />
+    <None Include="Images\Electric_charge_symbol_positive.svg.png" />
+    <None Include="Images\excel_2007.jpg" />
+    <None Include="Images\excel_recovery_3.1.3_screenshot.png" />
+    <None Include="Images\excelfix_3_en_frame_0001.png" />
+    <None Include="Images\excelfix_3_en_frame_0002.png" />
+    <None Include="Images\excelfix_3_en_frame_0003.png" />
+    <None Include="Images\excelfix_3_en_frame_0004.png" />
+    <None Include="Images\ExcelRecovery.jpg" />
+    <None Include="Images\ExcelRecovery.png" />
+    <None Include="Images\ExternalReference.jpg" />
+    <None Include="Images\Extractlove128.jpg" />
+    <None Include="Images\Folder64.jpg" />
+    <None Include="Images\Folder64.png" />
+    <None Include="Images\Icon_open_file_2.png" />
+    <None Include="Images\Icon_open_file_96x96.png" />
+    <None Include="Images\Kernel_Excel_Box.jpg" />
+    <None Include="Images\Kernel_Excel_Box.png" />
+    <Content Include="Images\Main.ico" />
+    <Content Include="Binaries\trunc.exe" />
+    <Content Include="Binaries\xmllint.exe" />
+    <Content Include="Binaries\xmlval.exe" />
+    <Content Include="Binaries\zip.exe" />
+    <None Include="Images\WordFix.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

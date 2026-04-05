@@ -1,0 +1,14 @@
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\bin\Debug\Savvy Repair for Microsoft Office.exe.config
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\obj\Debug\SavvyWord_Recovery1.FormAbout.resources
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\obj\Debug\SavvyWord_Recovery1.FormMain.resources
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\obj\Debug\SavvyWord_Recovery1.Resources.resources
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\obj\Debug\Savvy Repair for Microsoft Office.vbproj.GenerateResource.Cache
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\obj\Debug\Savvy Repair for Microsoft Office.exe
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\obj\Debug\Savvy Repair for Microsoft Office.xml
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\obj\Debug\Savvy Repair for Microsoft Office.pdb
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\bin\Debug\Forms\FormAbout.resx
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\bin\Debug\Forms\FormAbout.Designer.vb
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\bin\Debug\Forms\FormAbout.vb
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\bin\Debug\Savvy Repair for Microsoft Office.exe
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\bin\Debug\Savvy Repair for Microsoft Office.pdb
+C:\Users\socrtwo\Documents\Visual Studio 2012\Projects\Savvy Repair for Microsoft Office\Savvy Repair for Microsoft Office\bin\Debug\Savvy Repair for Microsoft Office.xml
