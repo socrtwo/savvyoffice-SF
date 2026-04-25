@@ -1,5 +1,10 @@
 # Savvy Repair for Microsoft Office
 
+<!--PAGES_LINK_BANNER-->
+> 🌐 **Live page:** [https://socrtwo.github.io/savvyoffice-SF/](https://socrtwo.github.io/savvyoffice-SF/)  
+> 📦 **Releases:** [github.com/socrtwo/savvyoffice-SF/releases](https://github.com/socrtwo/savvyoffice-SF/releases)
+<!--/PAGES_LINK_BANNER-->
+
 Repairs corrupt DOCX, XLSX, and PPTX files using 4 algorithmic methods: zip repair, strict XML validation truncation, lax validation, and text salvage.
 
 ## Screenshots
