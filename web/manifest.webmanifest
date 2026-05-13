@@ -1,0 +1,28 @@
+{
+  "name": "Savvy Repair for Microsoft Office",
+  "short_name": "Savvy Repair",
+  "description": "Repair corrupt DOCX, XLSX, and PPTX files in your browser. Zip repair, strict and lax XML validation, and plain-text salvage. Files never leave your device.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f0322",
+  "theme_color": "#0f0322",
+  "categories": ["productivity", "utilities"],
+  "lang": "en",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "file_handlers": [
+    {
+      "action": "./",
+      "accept": {
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"]
+      }
+    }
+  ]
+}

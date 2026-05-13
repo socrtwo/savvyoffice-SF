@@ -1,0 +1,112 @@
+name: Build platform release bundles
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g. v2.0.0)'
+        required: true
+        default: v2.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stage bundles
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -e
+          STAGE="$(mktemp -d)"
+          OUT="$PWD/dist"
+          mkdir -p "$OUT"
+
+          make_install_md () {
+            local plat="$1" file="$2" run_line="$3"
+            cat > "$file" <<EOF
+          # Savvy Repair for Microsoft Office — $plat
+
+          Recover corrupt .docx / .xlsx / .pptx files entirely on your device.
+
+          ## How to run
+
+          $run_line
+
+          A browser tab will open at http://localhost:8765/ . Stop the server with Ctrl+C when done.
+
+          ## Alternative
+
+          Open \`web/index.html\` directly in any modern browser.
+
+          MIT licensed. Source: https://github.com/socrtwo/savvyoffice-SF
+          EOF
+          }
+
+          WEB="$PWD/web"
+
+          # Windows
+          WIN="$STAGE/SavvyRepair-windows-$VERSION"
+          mkdir -p "$WIN/web" && cp -r "$WEB"/. "$WIN/web/"
+          cp "launchers/windows/Run Savvy Repair.cmd" "$WIN/"
+          make_install_md "Windows" "$WIN/INSTALL.md" "Double-click **Run Savvy Repair.cmd**."
+
+          # macOS
+          MAC="$STAGE/SavvyRepair-macos-$VERSION"
+          mkdir -p "$MAC/web" && cp -r "$WEB"/. "$MAC/web/"
+          cp "launchers/macos/Run Savvy Repair.command" "$MAC/"
+          chmod +x "$MAC/Run Savvy Repair.command"
+          make_install_md "macOS" "$MAC/INSTALL.md" "Right-click **Run Savvy Repair.command** → Open."
+
+          # Linux
+          LIN="$STAGE/SavvyRepair-linux-$VERSION"
+          mkdir -p "$LIN/web" && cp -r "$WEB"/. "$LIN/web/"
+          cp launchers/linux/run-savvy-repair.sh "$LIN/"
+          cp launchers/linux/savvy-repair.desktop "$LIN/"
+          chmod +x "$LIN/run-savvy-repair.sh"
+          make_install_md "Linux" "$LIN/INSTALL.md" "Run \`./run-savvy-repair.sh\` from a terminal."
+
+          # ChromeOS / Android / iOS / Web — pure PWA payload
+          for plat in chromeos android ios web; do
+            D="$STAGE/SavvyRepair-$plat-$VERSION"
+            mkdir -p "$D"
+            cp -r "$WEB"/. "$D/"
+          done
+
+          cd "$STAGE"
+          for d in SavvyRepair-windows-$VERSION SavvyRepair-macos-$VERSION SavvyRepair-chromeos-$VERSION SavvyRepair-android-$VERSION SavvyRepair-ios-$VERSION SavvyRepair-web-$VERSION; do
+            zip -qr "$OUT/$d.zip" "$d"
+          done
+          tar -czf "$OUT/SavvyRepair-linux-$VERSION.tar.gz" "SavvyRepair-linux-$VERSION"
+          zip -qr "$OUT/SavvyRepair-linux-$VERSION.zip" "SavvyRepair-linux-$VERSION"
+
+          cd "$OUT"
+          sha256sum SavvyRepair-* > "checksums-$VERSION.txt"
+          ls -la
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: savvy-repair-${{ steps.ver.outputs.version }}
+          path: dist/*
+
+      - name: Attach to release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*

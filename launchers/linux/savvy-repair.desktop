@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Savvy Repair for Microsoft Office
+Comment=Recover corrupt DOCX, XLSX, and PPTX files
+Exec=bash -c "$(dirname %k)/run-savvy-repair.sh"
+Icon=savvy-repair
+Terminal=false
+Categories=Office;Utility;
