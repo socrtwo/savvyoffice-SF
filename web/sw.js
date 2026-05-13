@@ -8,7 +8,7 @@ const ASSETS = [
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js'
+  './vendor/jszip.min.js'
 ];
 
 self.addEventListener('install', (e) => {
