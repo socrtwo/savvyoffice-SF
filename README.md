@@ -1,101 +1,110 @@
-<!--MODERNIZED:v1-->
-# Savvyoffice
+<!--MODERNIZED:v2-->
+# Savvy Repair for Microsoft Office
 
-> Migrated from SourceForge via SF2GH Migrator
-
-[![Live page](https://img.shields.io/badge/live-page-ff2e93?style=for-the-badge)](https://socrtwo.github.io/savvyoffice-SF/)
+[![Live page](https://img.shields.io/badge/live-app-ff2e93?style=for-the-badge)](https://socrtwo.github.io/savvyoffice-SF/)
 [![Releases](https://img.shields.io/github/v/release/socrtwo/savvyoffice-SF?style=for-the-badge&color=7c3aed)](https://github.com/socrtwo/savvyoffice-SF/releases)
 [![License](https://img.shields.io/github/license/socrtwo/savvyoffice-SF?style=for-the-badge&color=22d3ee)](https://github.com/socrtwo/savvyoffice-SF/blob/main/LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/socrtwo/savvyoffice-SF?style=for-the-badge&color=34d399)](https://github.com/socrtwo/savvyoffice-SF/commits)
 
-🌐 **Live:** https://socrtwo.github.io/savvyoffice-SF/  
-📦 **Downloads:** [Releases](https://github.com/socrtwo/savvyoffice-SF/releases)  
-📂 **Source:** [socrtwo/savvyoffice-SF](https://github.com/socrtwo/savvyoffice-SF)
+Recover corrupt **`.docx`**, **`.xlsx`**, and **`.pptx`** files using four
+recovery methods — entirely on your device. No upload. No server.
+
+🌐 **Try it now:** <https://socrtwo.github.io/savvyoffice-SF/>
+📦 **Downloads:** [Releases](https://github.com/socrtwo/savvyoffice-SF/releases)
 
 ---
 
-Repairs corrupt DOCX, XLSX, and PPTX files using 4 algorithmic methods: zip repair, strict XML validation truncation, lax validation, and text salvage.
+## What it does
 
-## Screenshots
+The four recovery methods from the original VB.NET app, re-implemented in
+the browser:
 
-Visit the [SourceForge project page](https://sourceforge.net/projects/savvyoffice/) to view screenshots.
+1. **Zip structure repair** — scans the file byte-by-byte for `PK\x03\x04`
+   local-file-header signatures and re-packs every recoverable entry.
+   Uses a fault-tolerant DEFLATE decoder (the *Immortal Inflater* from
+   [socrtwo/Universal-File-Repair-Tool](https://github.com/socrtwo/Universal-File-Repair-Tool))
+   so that **truncated XML subfiles still yield partial bytes** instead
+   of crashing the unzipper.
+2. **Strict XML validation** — for every `.xml` / `.rels` part, truncate
+   at the first parse error and re-close any still-open tags.
+3. **Lax XML validation** — drop the most-broken element repeatedly
+   until the part parses; recovers more data at the cost of some
+   formatting.
+4. **Plain-text salvage** — pull `<w:t>` / `<a:t>` / `<t>` runs into a
+   `.txt`, the last-resort recovery when even the XML can't be fixed.
 
-> **Tip:** If you have screenshots to contribute, open a PR adding them to a `screenshots/` folder!
+## Platforms
 
-**Language:** Delphi  
-**License:** MIT
+The web build is the canonical implementation. Desktop bundles ship the
+same web app plus a tiny launcher that starts a local static server and
+opens your browser. Mobile / ChromeOS install it as a PWA.
 
-## Features
+| Platform   | How to get it                                                                                                          |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 🌐 Web      | Open <https://socrtwo.github.io/savvyoffice-SF/> — no install needed.                                                  |
+| 🪟 Windows  | Download `SavvyRepair-windows.zip`, unzip, run **Run Savvy Repair.cmd**.                                               |
+| 🍎 macOS    | Download `SavvyRepair-macos.zip`, unzip, right-click **Run Savvy Repair.command** → Open.                              |
+| 🐧 Linux    | Download `SavvyRepair-linux.tar.gz`, extract, run `./run-savvy-repair.sh`.                                             |
+| 💻 ChromeOS | Open the web app, then **menu → Install app** (or the install icon in the address bar).                                |
+| 🤖 Android  | Open the web app in Chrome, then **menu → Add to Home Screen / Install app**.                                          |
+| 📱 iOS      | Open the web app in Safari, tap **Share → Add to Home Screen**.                                                        |
 
-- Zip archive structure repair
-- Strict XML validation with truncation
-- Lax XML validation (recovers more data at the cost of some formatting)
-- Plain text salvage as a last resort
-- Works with all Office 2007+ formats
+Once installed as a PWA, the app works fully offline.
 
-## System Requirements
+## Privacy
 
-- Windows XP or later
-- Delphi 7 (for original build) or Free Pascal / Lazarus (free alternative)
+Everything runs locally in your browser. Your document is never uploaded
+anywhere — there is no server-side component. You can verify this by
+disconnecting from the network after the page loads.
 
-## Installation & Usage
+## How it works under the hood
 
-### Building from Source (Delphi 7)
+* **`web/index.html`** — UI shell, PWA manifest, drag-and-drop picker.
+* **`web/immortal-inflate.js`** — fault-tolerant DEFLATE decoder and a
+  PK-signature scanner that survives truncated streams. Lets us recover
+  entries from archives that JSZip alone refuses to open.
+* **`web/app.js`** — orchestrates the four repair methods, packages
+  results back into clean archives via JSZip.
+* **`web/sw.js`** — service worker for offline use.
 
-1. Open the `.dpr` project file in Delphi 7
-2. Press **F9** to compile and run
+## Source heritage
 
-### Building with Free Pascal (free alternative)
+This started life on SourceForge in 2014 as a VB.NET WinForms app that
+shelled out to `7z.exe`, `xmllint.exe`, `xmlval.exe`, `trunc.exe`, and
+`doctotext.exe`. That code is still in this repo under
+[`Savvy Repair for Microsoft Office/`](./Savvy%20Repair%20for%20Microsoft%20Office/)
+for historical reference; the modern, cross-platform release is the web
+build in [`web/`](./web/). Both are MIT licensed.
+
+The legacy SourceForge project page is at
+<https://sourceforge.net/projects/savvyoffice/>.
+
+## Building from source
+
+### Web / PWA (all platforms)
+
+No build step — `web/` is plain HTML/JS/CSS. To run locally:
 
 ```bash
-sudo apt-get install fpc    # Linux
-# or download from https://www.freepascal.org/
-fpc -Sd src/*.pas
+cd web && python3 -m http.server 8765
+# open http://localhost:8765/
 ```
 
-### Using a Pre-built Release
+### Original VB.NET app (Windows only)
 
-Download the latest release from the [Releases](../../releases) page.
-
-## Origin
-
-This project was originally hosted on SourceForge and has been migrated to GitHub for easier access and collaboration.
-
-- **SourceForge:** [savvyoffice](https://sourceforge.net/projects/savvyoffice/)
-- **Migrated with:** [SF2GH Migrator](https://github.com/socrtwo/sf-to-github)
+Open `Savvy Repair for Microsoft Office.sln` in Visual Studio 2017+ and
+build. The included `.github/workflows/build.yml` builds it on
+`windows-latest` with MSBuild.
 
 ## Contributing
 
-Contributions are welcome! Feel free to:
-
-1. Fork this repository
-2. Create a feature branch (`git checkout -b my-feature`)
-3. Commit your changes (`git commit -m "Add my feature"`)
-4. Push to the branch (`git push origin my-feature`)
-5. Open a Pull Request
+Issues and pull requests welcome at
+<https://github.com/socrtwo/savvyoffice-SF/issues>.
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](LICENSE).
 
----
-
-## 📜 SourceForge heritage
-
-This project originated on **SourceForge** before being migrated to GitHub. The legacy SourceForge entry, if still available, can be searched at:
-
-🔗 https://sourceforge.net/projects/savvyoffice/
-
-The repository here at `socrtwo/savvyoffice-SF` is the canonical, actively-maintained home. All future updates, issue tracking, and releases happen on GitHub.
-
-## 🛠️ Contributing
-
-Issues and pull requests are welcome at [https://github.com/socrtwo/savvyoffice-SF/issues](https://github.com/socrtwo/savvyoffice-SF/issues).
-
-## 📝 License
-
-See the [LICENSE](https://github.com/socrtwo/savvyoffice-SF/blob/main/LICENSE) file in this repository. If no license file is present, the project is shared as-is for reference and personal use; please contact the maintainer for other use cases.
-
----
-
-*Maintained by [@socrtwo](https://github.com/socrtwo)*
+The fault-tolerant inflater is adapted from
+[socrtwo/Universal-File-Repair-Tool](https://github.com/socrtwo/Universal-File-Repair-Tool)
+(also MIT).
