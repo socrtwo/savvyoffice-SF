@@ -21,75 +21,118 @@ jobs:
 
       - name: Resolve version
         id: ver
+        shell: bash
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+            V="${GITHUB_REF#refs/tags/}"
           else
-            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+            V="${{ inputs.version }}"
           fi
+          if [ -z "$V" ]; then
+            echo "::error::No version resolved"; exit 1
+          fi
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: $V"
 
       - name: Stage bundles
+        shell: bash
         env:
           VERSION: ${{ steps.ver.outputs.version }}
         run: |
-          set -e
+          set -euxo pipefail
+          ROOT="$PWD"
+          WEB="$ROOT/web"
           STAGE="$(mktemp -d)"
-          OUT="$PWD/dist"
+          OUT="$ROOT/dist"
           mkdir -p "$OUT"
 
-          make_install_md () {
-            local plat="$1" file="$2" run_line="$3"
-            cat > "$file" <<EOF
-          # Savvy Repair for Microsoft Office — $plat
+          if [ ! -d "$WEB" ]; then
+            echo "::error::web/ directory not found"; exit 1
+          fi
+          if [ ! -d "$ROOT/launchers" ]; then
+            echo "::error::launchers/ directory not found"; exit 1
+          fi
 
-          Recover corrupt .docx / .xlsx / .pptx files entirely on your device.
-
-          ## How to run
-
-          $run_line
-
-          A browser tab will open at http://localhost:8765/ . Stop the server with Ctrl+C when done.
-
-          ## Alternative
-
-          Open \`web/index.html\` directly in any modern browser.
-
-          MIT licensed. Source: https://github.com/socrtwo/savvyoffice-SF
-          EOF
+          # Write platform INSTALL notes using printf — avoids YAML/heredoc indent traps.
+          write_install () {
+            local file="$1" plat="$2" run_line="$3"
+            {
+              printf '# Savvy Repair for Microsoft Office — %s\n\n' "$plat"
+              printf 'Recover corrupt .docx / .xlsx / .pptx files entirely on your device.\n\n'
+              printf '## How to run\n\n%s\n\n' "$run_line"
+              printf 'A browser tab will open at http://localhost:8765/ . Stop the server with Ctrl+C when done.\n\n'
+              printf '## Alternative\n\nOpen `web/index.html` directly in any modern browser.\n\n'
+              printf 'MIT licensed. Source: https://github.com/socrtwo/savvyoffice-SF\n'
+            } > "$file"
           }
 
-          WEB="$PWD/web"
+          mk_pwa_only_install () {
+            local file="$1" plat="$2" instructions="$3"
+            {
+              printf '# Savvy Repair for Microsoft Office — %s\n\n' "$plat"
+              printf 'Install as a PWA — works offline, behaves like a native app.\n\n'
+              printf '%s\n\n' "$instructions"
+              printf 'This bundle is the same PWA payload, in case you want to self-host it.\n'
+            } > "$file"
+          }
 
-          # Windows
+          # ---- Windows ----
           WIN="$STAGE/SavvyRepair-windows-$VERSION"
-          mkdir -p "$WIN/web" && cp -r "$WEB"/. "$WIN/web/"
+          mkdir -p "$WIN/web"
+          cp -r "$WEB"/. "$WIN/web/"
           cp "launchers/windows/Run Savvy Repair.cmd" "$WIN/"
-          make_install_md "Windows" "$WIN/INSTALL.md" "Double-click **Run Savvy Repair.cmd**."
+          write_install "$WIN/INSTALL.md" "Windows" \
+            "Double-click **Run Savvy Repair.cmd**. If SmartScreen warns, click **More info → Run anyway**."
 
-          # macOS
+          # ---- macOS ----
           MAC="$STAGE/SavvyRepair-macos-$VERSION"
-          mkdir -p "$MAC/web" && cp -r "$WEB"/. "$MAC/web/"
+          mkdir -p "$MAC/web"
+          cp -r "$WEB"/. "$MAC/web/"
           cp "launchers/macos/Run Savvy Repair.command" "$MAC/"
           chmod +x "$MAC/Run Savvy Repair.command"
-          make_install_md "macOS" "$MAC/INSTALL.md" "Right-click **Run Savvy Repair.command** → Open."
+          write_install "$MAC/INSTALL.md" "macOS" \
+            "Right-click **Run Savvy Repair.command** → **Open**. (Gatekeeper blocks direct double-click on unsigned scripts.)"
 
-          # Linux
+          # ---- Linux ----
           LIN="$STAGE/SavvyRepair-linux-$VERSION"
-          mkdir -p "$LIN/web" && cp -r "$WEB"/. "$LIN/web/"
+          mkdir -p "$LIN/web"
+          cp -r "$WEB"/. "$LIN/web/"
           cp launchers/linux/run-savvy-repair.sh "$LIN/"
           cp launchers/linux/savvy-repair.desktop "$LIN/"
           chmod +x "$LIN/run-savvy-repair.sh"
-          make_install_md "Linux" "$LIN/INSTALL.md" "Run \`./run-savvy-repair.sh\` from a terminal."
+          write_install "$LIN/INSTALL.md" "Linux" \
+            "Run \`./run-savvy-repair.sh\` from a terminal."
 
-          # ChromeOS / Android / iOS / Web — pure PWA payload
-          for plat in chromeos android ios web; do
-            D="$STAGE/SavvyRepair-$plat-$VERSION"
-            mkdir -p "$D"
-            cp -r "$WEB"/. "$D/"
-          done
+          # ---- ChromeOS / Android / iOS (PWA payload + per-platform install note) ----
+          CHROME="$STAGE/SavvyRepair-chromeos-$VERSION"
+          mkdir -p "$CHROME/web" && cp -r "$WEB"/. "$CHROME/web/"
+          mk_pwa_only_install "$CHROME/INSTALL.md" "ChromeOS" \
+            "1. Open https://socrtwo.github.io/savvyoffice-SF/ in Chrome.\n2. Address-bar install icon, or menu → Install Savvy Repair…\n3. To run offline from this bundle, right-click web/index.html → Open with → Chrome."
 
+          AND="$STAGE/SavvyRepair-android-$VERSION"
+          mkdir -p "$AND/web" && cp -r "$WEB"/. "$AND/web/"
+          mk_pwa_only_install "$AND/INSTALL.md" "Android" \
+            "1. Open https://socrtwo.github.io/savvyoffice-SF/ in Chrome.\n2. Menu (⋮) → Install app (or Add to Home screen).\n3. Launch from your home screen."
+
+          IOS="$STAGE/SavvyRepair-ios-$VERSION"
+          mkdir -p "$IOS/web" && cp -r "$WEB"/. "$IOS/web/"
+          mk_pwa_only_install "$IOS/INSTALL.md" "iOS / iPadOS" \
+            "1. Open https://socrtwo.github.io/savvyoffice-SF/ in Safari.\n2. Tap Share → Add to Home Screen.\n3. Launches full-screen, no browser chrome."
+
+          # ---- Web (raw PWA payload, no INSTALL.md needed) ----
+          WEB_OUT="$STAGE/SavvyRepair-web-$VERSION"
+          mkdir -p "$WEB_OUT"
+          cp -r "$WEB"/. "$WEB_OUT/"
+
+          # ---- Pack everything ----
           cd "$STAGE"
-          for d in SavvyRepair-windows-$VERSION SavvyRepair-macos-$VERSION SavvyRepair-chromeos-$VERSION SavvyRepair-android-$VERSION SavvyRepair-ios-$VERSION SavvyRepair-web-$VERSION; do
+          for d in \
+            "SavvyRepair-windows-$VERSION" \
+            "SavvyRepair-macos-$VERSION" \
+            "SavvyRepair-chromeos-$VERSION" \
+            "SavvyRepair-android-$VERSION" \
+            "SavvyRepair-ios-$VERSION" \
+            "SavvyRepair-web-$VERSION"; do
             zip -qr "$OUT/$d.zip" "$d"
           done
           tar -czf "$OUT/SavvyRepair-linux-$VERSION.tar.gz" "SavvyRepair-linux-$VERSION"
@@ -99,14 +142,19 @@ jobs:
           sha256sum SavvyRepair-* > "checksums-$VERSION.txt"
           ls -la
 
-      - name: Upload artifacts
+      - name: Upload workflow artifacts
         uses: actions/upload-artifact@v4
         with:
           name: savvy-repair-${{ steps.ver.outputs.version }}
           path: dist/*
+          if-no-files-found: error
 
-      - name: Attach to release
-        if: github.event_name == 'push'
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.ver.outputs.version }}
+          name: ${{ steps.ver.outputs.version }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          make_latest: 'true'
           files: dist/*
