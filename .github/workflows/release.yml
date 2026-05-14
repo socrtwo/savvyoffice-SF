@@ -13,12 +13,16 @@ on:
 permissions:
   contents: write
 
+# ---------------------------------------------------------------------------
+# Job 1 — resolve the version string once; all other jobs inherit it.
+# ---------------------------------------------------------------------------
 jobs:
-  bundle:
+  meta:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+      semver:  ${{ steps.ver.outputs.semver }}
     steps:
-      - uses: actions/checkout@v4
-
       - name: Resolve version
         id: ver
         shell: bash
@@ -31,13 +35,26 @@ jobs:
           if [ -z "$V" ]; then
             echo "::error::No version resolved"; exit 1
           fi
-          echo "version=$V" >> "$GITHUB_OUTPUT"
-          echo "Resolved version: $V"
+          SEMVER="${V#v}"    # strip leading 'v' for npm / electron-builder
+          echo "version=$V"     >> "$GITHUB_OUTPUT"
+          echo "semver=$SEMVER" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: $V  (semver: $SEMVER)"
+
+  # ---------------------------------------------------------------------------
+  # Job 2 — PWA portable bundles (zip / tar.gz with shell launchers).
+  # These are kept alongside the native installers so users who prefer a
+  # no-install portable bundle can still grab one.
+  # ---------------------------------------------------------------------------
+  bundle-pwa:
+    needs: meta
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Stage bundles
         shell: bash
-        env:
-          VERSION: ${{ steps.ver.outputs.version }}
         run: |
           set -euxo pipefail
           ROOT="$PWD"
@@ -53,7 +70,6 @@ jobs:
             echo "::error::launchers/ directory not found"; exit 1
           fi
 
-          # Write platform INSTALL notes using printf — avoids YAML/heredoc indent traps.
           write_install () {
             local file="$1" plat="$2" run_line="$3"
             {
@@ -119,7 +135,7 @@ jobs:
           mk_pwa_only_install "$IOS/INSTALL.md" "iOS / iPadOS" \
             "1. Open https://socrtwo.github.io/savvyoffice-SF/ in Safari.\n2. Tap Share → Add to Home Screen.\n3. Launches full-screen, no browser chrome."
 
-          # ---- Web (raw PWA payload, no INSTALL.md needed) ----
+          # ---- Web (raw PWA payload) ----
           WEB_OUT="$STAGE/SavvyRepair-web-$VERSION"
           mkdir -p "$WEB_OUT"
           cp -r "$WEB"/. "$WEB_OUT/"
@@ -136,25 +152,150 @@ jobs:
             zip -qr "$OUT/$d.zip" "$d"
           done
           tar -czf "$OUT/SavvyRepair-linux-$VERSION.tar.gz" "SavvyRepair-linux-$VERSION"
-          zip -qr "$OUT/SavvyRepair-linux-$VERSION.zip" "SavvyRepair-linux-$VERSION"
+          zip -qr  "$OUT/SavvyRepair-linux-$VERSION.zip"   "SavvyRepair-linux-$VERSION"
+          ls -la "$OUT"
 
-          cd "$OUT"
-          sha256sum SavvyRepair-* > "checksums-$VERSION.txt"
-          ls -la
-
-      - name: Upload workflow artifacts
+      - name: Upload PWA bundles
         uses: actions/upload-artifact@v4
         with:
-          name: savvy-repair-${{ steps.ver.outputs.version }}
+          name: pwa-bundles
           path: dist/*
           if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # Job 3 — Electron native installer: Windows (NSIS .exe + portable .exe)
+  # ---------------------------------------------------------------------------
+  build-win:
+    needs: meta
+    runs-on: windows-latest
+    env:
+      SEMVER: ${{ needs.meta.outputs.semver }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set version
+        run: npm version --no-git-tag-version $env:SEMVER
+        shell: pwsh
+
+      - name: Build Windows installers
+        run: npm run dist:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-win
+          path: |
+            dist-electron/*.exe
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # Job 4 — Electron native installer: macOS (.dmg, Intel + Apple Silicon)
+  # ---------------------------------------------------------------------------
+  build-mac:
+    needs: meta
+    runs-on: macos-latest
+    env:
+      SEMVER: ${{ needs.meta.outputs.semver }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set version
+        run: npm version --no-git-tag-version "$SEMVER"
+
+      - name: Build macOS installer
+        run: npm run dist:mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Code signing is optional — omit CSC_LINK/CSC_KEY_PASSWORD to build
+          # without signing (users will need to allow the app in Gatekeeper).
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-mac
+          path: |
+            dist-electron/*.dmg
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # Job 5 — Electron native installer: Linux (.AppImage + .deb)
+  # ---------------------------------------------------------------------------
+  build-linux:
+    needs: meta
+    runs-on: ubuntu-latest
+    env:
+      SEMVER: ${{ needs.meta.outputs.semver }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set version
+        run: npm version --no-git-tag-version "$SEMVER"
+
+      - name: Build Linux installers
+        run: npm run dist:linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-linux
+          path: |
+            dist-electron/*.AppImage
+            dist-electron/*.deb
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # Job 6 — Collect all artifacts and publish the GitHub Release.
+  # ---------------------------------------------------------------------------
+  release:
+    needs: [meta, bundle-pwa, build-win, build-mac, build-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4.1.3
+        with:
+          path: all-artifacts
+          merge-multiple: true
+
+      - name: Generate checksums
+        shell: bash
+        run: |
+          cd all-artifacts
+          sha256sum * > "checksums-${{ needs.meta.outputs.version }}.txt"
+          echo "=== Release files ==="
+          ls -la
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.ver.outputs.version }}
-          name: ${{ steps.ver.outputs.version }}
+          tag_name: ${{ needs.meta.outputs.version }}
+          name: ${{ needs.meta.outputs.version }}
           generate_release_notes: true
           fail_on_unmatched_files: true
           make_latest: 'true'
-          files: dist/*
+          files: all-artifacts/*
+

@@ -1,0 +1,68 @@
+{
+  "name": "savvy-repair",
+  "version": "2.0.0",
+  "description": "Recover corrupt .docx, .xlsx, .pptx files entirely on your device. No upload.",
+  "main": "electron-main.js",
+  "scripts": {
+    "start":       "electron .",
+    "dist:win":    "electron-builder --win   --publish never",
+    "dist:mac":    "electron-builder --mac   --publish never",
+    "dist:linux":  "electron-builder --linux --publish never"
+  },
+  "build": {
+    "appId": "com.socrtwo.savvyrepair",
+    "productName": "Savvy Repair for Microsoft Office",
+    "copyright": "Copyright © 2025 socrtwo",
+    "files": [
+      "web/**",
+      "electron-main.js"
+    ],
+    "directories": {
+      "output": "dist-electron"
+    },
+    "artifactName": "SavvyRepair-${version}-${os}.${ext}",
+    "win": {
+      "target": [
+        { "target": "nsis",     "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "web/icons/icon-512.png"
+    },
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["x64", "arm64"] }
+      ],
+      "icon": "web/icons/icon-512.png",
+      "darkModeSupport": true,
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "linux": {
+      "target": [
+        { "target": "AppImage", "arch": ["x64"] },
+        { "target": "deb",      "arch": ["x64"] }
+      ],
+      "icon": "web/icons/icon-512.png",
+      "category": "Utility",
+      "description": "Recover corrupt .docx, .xlsx, and .pptx files on your device"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "artifactName": "SavvyRepair-${version}-win-setup.${ext}"
+    },
+    "portable": {
+      "artifactName": "SavvyRepair-${version}-win-portable.${ext}"
+    },
+    "dmg": {
+      "artifactName": "SavvyRepair-${version}-mac.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "41.0.0",
+    "electron-builder": "25.1.8"
+  }
+}
