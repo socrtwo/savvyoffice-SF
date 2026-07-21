@@ -23,6 +23,26 @@
 
   let selectedFile = null;
   let blobUrls = [];
+  let analysisFile = null;
+  let analysisPromise = null;
+
+  /* First step for every loaded file: identify it by magic numbers and
+   * separate any embedded/concatenated foreign files (S2 File Identifier).
+   * Cached per file; recovery methods consume report.proceedBytes. */
+  function analyzeFirst(f) {
+    if (analysisFile === f && analysisPromise) return analysisPromise;
+    analysisFile = f;
+    analysisPromise = (async () => {
+      const u8 = await readBytes(f);
+      if (typeof S2FileID === 'undefined') {
+        return { proceedBytes: u8, primary: null, foreign: [], mismatch: false };
+      }
+      const report = S2FileID.analyze(u8, { programKey: 'savvyoffice', fileName: f.name });
+      S2FileID.renderPanel($('s2-fileid'), report);
+      return report;
+    })();
+    return analysisPromise;
+  }
 
   function log(msg, cls) {
     const line = document.createElement('div');
@@ -35,6 +55,9 @@
 
   function clearAll() {
     selectedFile = null;
+    analysisFile = null;
+    analysisPromise = null;
+    $('s2-fileid').innerHTML = '';
     pickedEl.textContent = '';
     runBtn.disabled = true;
     logEl.innerHTML = '';
@@ -55,6 +78,7 @@
     selectedFile = f;
     pickedEl.textContent = `${f.name} — ${(f.size / 1024).toFixed(1)} KB`;
     runBtn.disabled = false;
+    analyzeFirst(f).catch((err) => log(`File identification failed: ${err.message}`, 'warn'));
   }
 
   drop.addEventListener('click', () => fileInput.click());
@@ -92,7 +116,9 @@
 
   /* ---------- Tolerant read: prefer immortal scan, fall back to JSZip ---------- */
   async function readEntries(file) {
-    const u8 = await readBytes(file);
+    // Operate on the segment the S2 File Identifier selected for this
+    // program (foreign concatenated segments are offered separately).
+    const u8 = (await analyzeFirst(file)).proceedBytes;
     const scan = tolerantUnzip(u8);
     const count = Object.keys(scan.entries).length;
     if (count > 0) {
@@ -315,6 +341,12 @@
     log(`Working on ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)`, 'info');
 
     try {
+      const report = await analyzeFirst(selectedFile);
+      if (report.primary) {
+        log(`Identified as: ${report.primary.description}`, report.mismatch ? 'warn' : 'info');
+        if (report.mismatch) log('Not a file type this program repairs — see the recommendation above.', 'warn');
+        if (report.foreign.length) log(`${report.foreign.length} embedded/concatenated foreign file(s) separated — downloadable in the panel above.`, 'warn');
+      }
       if ($('opt-zip').checked) {
         setStatus('Method 1: zip structure repair…');
         const blob = await repairZip(selectedFile);
