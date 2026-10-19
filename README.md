@@ -35,19 +35,19 @@ the browser:
 
 ## Platforms
 
-The web build is the canonical implementation. Desktop bundles ship the
-same web app plus a tiny launcher that starts a local static server and
-opens your browser. Mobile / ChromeOS install it as a PWA.
+The web build is the canonical implementation. Native desktop installers
+(built with Electron) ship the same web app in a real desktop window —
+no browser or Python required. Mobile / ChromeOS users can install it as a PWA.
 
-| Platform   | How to get it                                                                                                          |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------- |
-| 🌐 Web      | Open <https://socrtwo.github.io/savvyoffice-SF/> — no install needed.                                                  |
-| 🪟 Windows  | Download `SavvyRepair-windows.zip`, unzip, run **Run Savvy Repair.cmd**.                                               |
-| 🍎 macOS    | Download `SavvyRepair-macos.zip`, unzip, right-click **Run Savvy Repair.command** → Open.                              |
-| 🐧 Linux    | Download `SavvyRepair-linux.tar.gz`, extract, run `./run-savvy-repair.sh`.                                             |
-| 💻 ChromeOS | Open the web app, then **menu → Install app** (or the install icon in the address bar).                                |
-| 🤖 Android  | Open the web app in Chrome, then **menu → Add to Home Screen / Install app**.                                          |
-| 📱 iOS      | Open the web app in Safari, tap **Share → Add to Home Screen**.                                                        |
+| Platform   | Native installer (recommended)                                                                                         | Portable bundle (no install)                                                           |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| 🌐 Web      | Open <https://socrtwo.github.io/savvyoffice-SF/> — no install needed.                                                  | —                                                                                      |
+| 🪟 Windows  | `SavvyRepair-*-win-setup.exe` — NSIS installer (Next → Next → Finish)                                                 | `SavvyRepair-windows-*.zip` — unzip, run **Run Savvy Repair.cmd** (needs Python)       |
+| 🍎 macOS    | `SavvyRepair-*-mac.dmg` — drag to Applications; right-click → Open on first launch                                    | `SavvyRepair-macos-*.zip` — unzip, right-click **Run Savvy Repair.command** → Open    |
+| 🐧 Linux    | `SavvyRepair-*-linux.AppImage` — `chmod +x` then run; or `*_amd64.deb` for apt                                       | `SavvyRepair-linux-*.tar.gz` — extract, run `./run-savvy-repair.sh`                   |
+| 💻 ChromeOS | Open the web app, then **menu → Install app** (or the install icon in the address bar).                                | —                                                                                      |
+| 🤖 Android  | Open the web app in Chrome, then **menu → Add to Home Screen / Install app**.                                          | —                                                                                      |
+| 📱 iOS      | Open the web app in Safari, tap **Share → Add to Home Screen**.                                                        | —                                                                                      |
 
 Once installed as a PWA, the app works fully offline.
 
@@ -89,6 +89,22 @@ No build step — `web/` is plain HTML/JS/CSS. To run locally:
 cd web && python3 -m http.server 8765
 # open http://localhost:8765/
 ```
+
+### Electron desktop app (Windows / macOS / Linux)
+
+Requires Node.js 20+.
+
+```bash
+npm install               # install Electron + electron-builder
+npm start                 # launch in dev mode
+
+npm run dist:win          # build Windows NSIS .exe + portable .exe → dist-electron/
+npm run dist:mac          # build macOS .dmg (x64 + arm64)          → dist-electron/
+npm run dist:linux        # build Linux .AppImage + .deb             → dist-electron/
+```
+
+CI builds all three in parallel via `.github/workflows/release.yml` when a
+`v*` tag is pushed.
 
 ### Original VB.NET app (Windows only)
 

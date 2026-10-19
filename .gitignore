@@ -27,5 +27,7 @@ ehthumbs.db
 config.php
 cookiefile
 
-# Workflow stage dir
+# Workflow stage dir / Node.js / Electron packaging
 /dist
+node_modules/
+dist-electron/
